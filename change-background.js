@@ -3,16 +3,23 @@ var exec = require('child_process').exec,
 	fs = require('fs');
 
 var filename = '/home/will/testpic.jpg';
-var changeBackground = function(filename){
-	exec('gsettings set org.gnome.desktop.background picture-uri "file://'+filename + '"');
+var changeBackground = function(){
+	var command = 'gsettings set org.gnome.desktop.background picture-uri "file://'+filename + '"';
+	console.log(command);
+	exec(command);
+};
+
+var searchForImagesOf = function(search){
+	var url = "http://api.flickr.com/services/rest/?method=flickr.photos.search";
+	var flickerApiSecret = require('./flickr-creds.json').secret;
+	var flickerApiKey = require('./flickr-creds.json').key;
+	url += "&api_key=" + flickerApiKey + "&text=" + search + "&format=json&nojsoncallback=1";
+	console.log(url);
+	return url;
 };
 
 var getRandomImageOf = function(search, cb){
-	var flickerApiKey = require('./flickr-creds.json').key;
-	var flickerApiSecret = require('./flickr-creds.json').secret;
-	var url = "http://api.flickr.com/services/rest/?method=flickr.photos.search";
-	url += "&api_key=" + flickerApiKey + "&text=" + search + "&format=json&nojsoncallback=1";
-	console.log(url);
+	var url = searchForImagesOf(search);
 	var req = http.get(url, function(res){
 		var results = '';
 		console.log(res.statusCode);
@@ -52,9 +59,10 @@ var imageUrl = function(imgDetails){
 		.replace('{id}', imgDetails.id)
 		.replace('{secret}', imgDetails.secret);
 }
-//http.get("http://www.flicker.co.uk/images/srpr/logo3w.png", downloadImage);
-getRandomImageOf('bottle', function(image){ 
-	var url = imageUrl(image);
-	console.log(url);
-	http.get(url, downloadImage);
-});
+setInterval(function(){
+	getRandomImageOf('bottle', function(image){ 
+		var url = imageUrl(image);
+		console.log(url);
+		http.get(url, downloadImage);
+	});
+}, 20000);
