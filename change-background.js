@@ -4,7 +4,7 @@ var http = require('http'),
 	fs = require('fs');
 
 var downloadImage = function(res){
-	var filename = '/home/will/testpic.jpg';
+	var filename = '/tmp/background.jpg';
 	var stream = fs.createWriteStream(filename);
 	stream.on('error', logError);
 	console.log(res.statusCode);
