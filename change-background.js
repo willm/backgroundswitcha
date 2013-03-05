@@ -11,9 +11,8 @@ var changeBackground = function(){
 
 var searchForImagesOf = function(search){
 	var url = "http://api.flickr.com/services/rest/?method=flickr.photos.search";
-	var flickerApiSecret = require('./flickr-creds.json').secret;
-	var flickerApiKey = require('./flickr-creds.json').key;
-	url += "&api_key=" + flickerApiKey + "&text=" + search + "&format=json&nojsoncallback=1";
+	var flickrApi = require('./flickr-creds.json');
+	url += "&api_key=" + flickrApi.key + "&text=" + search + "&format=json&nojsoncallback=1";
 	console.log(url);
 	return url;
 };
@@ -53,14 +52,14 @@ var logError= function(err){
 };
 
 var imageUrl = function(imgDetails){
-	var templateUrl = "http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg";
+	var templateUrl = "http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_b.jpg";
 	return templateUrl.replace('{farm-id}', imgDetails.farm)
 		.replace('{server-id}', imgDetails.server)
 		.replace('{id}', imgDetails.id)
 		.replace('{secret}', imgDetails.secret);
 }
 setInterval(function(){
-	getRandomImageOf('bottle', function(image){ 
+	getRandomImageOf(process.argv[2], function(image){ 
 		var url = imageUrl(image);
 		console.log(url);
 		http.get(url, downloadImage);
