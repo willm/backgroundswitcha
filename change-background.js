@@ -3,25 +3,18 @@ var http = require('http'),
 	flickr = require('./flickr.js'),
 	fs = require('fs');
 
-var downloadImage = function(res){
-	var filename = '/tmp/background.jpg';
-	var stream = fs.createWriteStream(filename);
-	stream.on('error', logError);
-	console.log(res.statusCode);
-	res.pipe(stream);
-	res.on('end', function(){
-		background.changeBackground(filename);
-	});
-	res.on('error', logError);
-};
-
-var logError= function(err){
-	console.log(err);
-};
-
-setInterval(function(){
-	flickr.randomImageOf(process.argv[2], function(image){ 
-		console.log(image.url);
-		http.get(image.url, downloadImage);
-	});
-}, 20000);
+if(!process.argv[2])
+    console.log("usage: node change-background.js [topic] [time interval in seconds]");
+else{
+    setInterval(function(){
+        flickr.randomImageOf(process.argv[2], function(image){ 
+            console.log(image.url);
+            http.get(image.url, function(responseStream){
+                var fileName = '/tmp/background.jpg';
+                responseStream.on('error', console.log);
+                responseStream.pipe(fs.createWriteStream(fileName));
+                responseStream.on('end', function(){background.changeBackground(fileName);});
+            });
+        });
+    }, process.argv[3] * 1000 || 2000);
+}

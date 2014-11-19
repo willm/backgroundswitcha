@@ -1,14 +1,13 @@
-var http = require('http');
+var http = require('https');
 
 var logError= function(err){
 	console.log(err);
 };
 
 var searchForImagesOf = function(search){
-	var url = "http://api.flickr.com/services/rest/?method=flickr.photos.search";
+	var url = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
 	var flickrApi = require('./flickr-creds.json');
 	url += "&api_key=" + flickrApi.key + "&text=" + search + "&format=json&nojsoncallback=1";
-	console.log(url);
 	return url;
 };
 
